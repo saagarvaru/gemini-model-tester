@@ -195,6 +195,50 @@ export interface EnhancedColumnResponse extends ColumnResponse {
   technicalMetadata: TechnicalMetadata;
 }
 
+// Prompt Composer types
+export interface PromptTemplate {
+  id: string;
+  name: string;
+  content: string;
+  category: string;
+  createdAt: number;
+  updatedAt: number;
+  description?: string;
+  tags?: string[];
+}
+
+export interface PromptComposerState {
+  content: string;
+  isVisible: boolean;
+  width: number;
+  templates: PromptTemplate[];
+  history: string[];
+  selectedTemplateId: string | null;
+}
+
+export interface PromptComposerProps {
+  isVisible: boolean;
+  content: string;
+  templates: PromptTemplate[];
+  width: number;
+  onToggleVisibility: () => void;
+  onContentChange: (content: string) => void;
+  onSendToMainInput: () => void;
+  onSaveTemplate: (name: string, category: string, description?: string) => void;
+  onLoadTemplate: (templateId: string) => void;
+  onDeleteTemplate: (templateId: string) => void;
+  onClear: () => void;
+  onWidthChange: (width: number) => void;
+}
+
+export interface TemplateManagerProps {
+  templates: PromptTemplate[];
+  onLoadTemplate: (templateId: string) => void;
+  onDeleteTemplate: (templateId: string) => void;
+  onSaveTemplate: (name: string, category: string, description?: string) => void;
+  currentContent: string;
+}
+
 export interface AppState {
   selectedModels: Record<ColumnId, string>;
   responses: Record<ColumnId, EnhancedColumnResponse | null>;
@@ -203,6 +247,7 @@ export interface AppState {
   currentPrompt: string;
   modelCategories: Record<string, ModelCategory>;
   availableModels: GeminiModels;
+  promptComposer: PromptComposerState;
 }
 
 // Component prop types
