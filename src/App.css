@@ -385,8 +385,8 @@ body {
   color: white;
   border: none;
   border-radius: 50%;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   padding: 0;
   cursor: pointer;
   display: flex;
@@ -394,7 +394,7 @@ body {
   justify-content: center;
   transition: all 0.2s ease;
   flex-shrink: 0;
-  margin: 0 4px;
+  margin: 0 2px;
 }
 
 .send-button:hover:not(:disabled) {
