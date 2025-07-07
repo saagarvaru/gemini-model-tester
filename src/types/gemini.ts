@@ -117,6 +117,10 @@ export interface ColumnResponse {
   timestamp: number;
   modelId: string;
   modelName: string;
+  startTime: number;
+  endTime: number;
+  responseTime: number;
+  isStreaming?: boolean;
 }
 
 export interface ColumnError {
@@ -186,6 +190,9 @@ export interface GenerateContentResult {
   text: string;
   modelId: string;
   timestamp: number;
+  startTime: number;
+  endTime: number;
+  responseTime: number;
 }
 
 export interface BatchGenerateResult {

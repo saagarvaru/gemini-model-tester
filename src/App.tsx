@@ -114,18 +114,27 @@ function App() {
             timestamp: batchResult.results.column1.timestamp,
             modelId: batchResult.results.column1.modelId,
             modelName: GEMINI_MODELS[batchResult.results.column1.modelId]?.name || batchResult.results.column1.modelId,
+            startTime: batchResult.results.column1.startTime,
+            endTime: batchResult.results.column1.endTime,
+            responseTime: batchResult.results.column1.responseTime,
           } : null,
           column2: batchResult.results.column2 ? {
             text: batchResult.results.column2.text,
             timestamp: batchResult.results.column2.timestamp,
             modelId: batchResult.results.column2.modelId,
             modelName: GEMINI_MODELS[batchResult.results.column2.modelId]?.name || batchResult.results.column2.modelId,
+            startTime: batchResult.results.column2.startTime,
+            endTime: batchResult.results.column2.endTime,
+            responseTime: batchResult.results.column2.responseTime,
           } : null,
           column3: batchResult.results.column3 ? {
             text: batchResult.results.column3.text,
             timestamp: batchResult.results.column3.timestamp,
             modelId: batchResult.results.column3.modelId,
             modelName: GEMINI_MODELS[batchResult.results.column3.modelId]?.name || batchResult.results.column3.modelId,
+            startTime: batchResult.results.column3.startTime,
+            endTime: batchResult.results.column3.endTime,
+            responseTime: batchResult.results.column3.responseTime,
           } : null,
         },
         errors: {
@@ -182,11 +191,6 @@ function App() {
 
   return (
     <div className="app">
-      <header className="app-header">
-        <h1>Gemini Model Testing</h1>
-        <p>Compare responses from multiple Gemini models side-by-side</p>
-      </header>
-
       <main className="app-main">
         <div className="columns-container">
           <Column

@@ -34,6 +34,8 @@ export class GeminiService {
     prompt: string, 
     options: GenerateContentOptions = {}
   ): Promise<GenerateContentResult> {
+    const startTime = Date.now();
+    
     try {
       const url = `${this.config.baseUrl}/models/${modelId}:generateContent?key=${this.config.apiKey}`;
       
@@ -87,7 +89,8 @@ export class GeminiService {
       }
 
       const data: GeminiApiResponse = await response.json();
-      return this.handleResponse(data, modelId);
+      const endTime = Date.now();
+      return this.handleResponse(data, modelId, startTime, endTime);
 
     } catch (error) {
       if (error instanceof GeminiApiError) {
@@ -153,7 +156,7 @@ export class GeminiService {
   /**
    * Process and format the API response
    */
-  private handleResponse(response: GeminiApiResponse, modelId: string): GenerateContentResult {
+  private handleResponse(response: GeminiApiResponse, modelId: string, startTime: number, endTime: number): GenerateContentResult {
     if (!response.candidates || response.candidates.length === 0) {
       throw new GeminiApiError('No candidates returned from API', undefined, modelId);
     }
@@ -176,7 +179,10 @@ export class GeminiService {
     return {
       text,
       modelId,
-      timestamp: Date.now()
+      timestamp: endTime,
+      startTime,
+      endTime,
+      responseTime: endTime - startTime
     };
   }
 

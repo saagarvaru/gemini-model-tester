@@ -10,6 +10,14 @@ const ResponseDisplay: React.FC<ResponseDisplayProps> = ({
     return new Date(timestamp).toLocaleTimeString();
   };
 
+  const formatResponseTime = (responseTime: number) => {
+    if (responseTime < 1000) {
+      return `${responseTime}ms`;
+    } else {
+      return `${(responseTime / 1000).toFixed(1)}s`;
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="response-display loading">
@@ -48,11 +56,6 @@ const ResponseDisplay: React.FC<ResponseDisplayProps> = ({
 
   return (
     <div className="response-display success">
-      <div className="response-header">
-        <h3>{response.modelName}</h3>
-        <span className="timestamp">{formatTimestamp(response.timestamp)}</span>
-      </div>
-      
       <div className="response-content">
         <div className="response-text">
           {response.text.split('\n').map((line, index) => (
@@ -65,6 +68,8 @@ const ResponseDisplay: React.FC<ResponseDisplayProps> = ({
         <div className="response-stats">
           <span>Characters: {response.text.length}</span>
           <span>Words: {response.text.split(/\s+/).filter(word => word.length > 0).length}</span>
+          <span>Response time: {formatResponseTime(response.responseTime)}</span>
+          <span>Completed: {formatTimestamp(response.timestamp)}</span>
         </div>
       </div>
     </div>

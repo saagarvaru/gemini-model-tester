@@ -21,7 +21,7 @@ export const GEMINI_MODELS: GeminiModels = {
     features: ['thinking', 'fast', 'cost-effective', 'multimodal', 'audio', 'video']
   },
   'gemini-2.5-flash-lite-preview': {
-    id: 'gemini-2.5-flash-lite-preview',
+    id: 'gemini-2.5-flash-lite-preview-06-17',
     name: 'Gemini 2.5 Flash Lite',
     description: 'Most cost-efficient model optimized for high throughput',
     contextWindow: '1M tokens',

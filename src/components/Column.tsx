@@ -20,7 +20,6 @@ const Column: React.FC<ColumnProps> = ({
   return (
     <div className="column">
       <div className="column-header">
-        <h2>Column {columnId.slice(-1)}</h2>
         <ModelSelector
           selectedModel={selectedModel}
           onChange={handleModelChange}

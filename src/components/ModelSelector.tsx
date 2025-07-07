@@ -29,9 +29,6 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
 
   return (
     <div className="model-selector">
-      <label htmlFor={`model-select-${columnId}`} className="model-selector-label">
-        Select Model:
-      </label>
       <select
         id={`model-select-${columnId}`}
         value={selectedModel}
@@ -65,25 +62,6 @@ const ModelSelector: React.FC<ModelSelectorProps> = ({
           </optgroup>
         ))}
       </select>
-      
-      {availableModels[selectedModel] && (
-        <div className="model-info">
-          <p className="model-description">{availableModels[selectedModel].description}</p>
-          <div className="model-details">
-            <span className="model-context">Context: {availableModels[selectedModel].contextWindow}</span>
-            <span className="model-category">Category: {availableModels[selectedModel].category}</span>
-          </div>
-          {availableModels[selectedModel].features.length > 0 && (
-            <div className="model-features">
-              {availableModels[selectedModel].features.map((feature) => (
-                <span key={feature} className={`feature-tag feature-${feature}`}>
-                  {feature}
-                </span>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
     </div>
   );
 };
