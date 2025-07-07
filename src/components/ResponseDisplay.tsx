@@ -1,4 +1,6 @@
+import React, { useState } from 'react';
 import type { ResponseDisplayProps } from '../types/gemini';
+import MetricsPanel from './MetricsPanel';
 
 const ResponseDisplay: React.FC<ResponseDisplayProps> = ({
   response,
@@ -6,6 +8,8 @@ const ResponseDisplay: React.FC<ResponseDisplayProps> = ({
   error,
   modelName,
 }) => {
+  const [showMetrics, setShowMetrics] = useState(false);
+
   const formatTimestamp = (timestamp: number) => {
     return new Date(timestamp).toLocaleTimeString();
   };
@@ -65,13 +69,27 @@ const ResponseDisplay: React.FC<ResponseDisplayProps> = ({
       </div>
 
       <div className="response-footer">
-        <div className="response-stats">
-          <span>Characters: {response.text.length}</span>
-          <span>Words: {response.text.split(/\s+/).filter(word => word.length > 0).length}</span>
-          <span>Response time: {formatResponseTime(response.responseTime)}</span>
-          <span>Completed: {formatTimestamp(response.timestamp)}</span>
+        <div className="response-stats-compact">
+          <span>{response.text.length} chars • {response.text.split(/\s+/).filter(word => word.length > 0).length} words • {formatResponseTime(response.responseTime)} • {formatTimestamp(response.timestamp)}</span>
+          <button 
+            className="metrics-toggle-inline"
+            onClick={() => setShowMetrics(!showMetrics)}
+            title="Toggle detailed metrics"
+          >
+            {showMetrics ? '− metrics' : '+ metrics'}
+          </button>
         </div>
       </div>
+
+      {showMetrics && response.performanceMetrics && response.qualityMetrics && response.technicalMetadata && (
+        <div className="metrics-container">
+          <MetricsPanel
+            performanceMetrics={response.performanceMetrics}
+            qualityMetrics={response.qualityMetrics}
+            technicalMetadata={response.technicalMetadata}
+          />
+        </div>
+      )}
     </div>
   );
 };

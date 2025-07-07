@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
-import type { AppState, ColumnId } from './types/gemini';
+import type { AppState, ColumnId, EnhancedColumnResponse } from './types/gemini';
 import { GEMINI_MODELS, DEFAULT_MODEL_SELECTION } from './config/geminiModels';
 import { MODEL_CATEGORIES } from './types/gemini';
 import { GeminiService } from './services/GeminiService';
@@ -117,6 +117,9 @@ function App() {
             startTime: batchResult.results.column1.startTime,
             endTime: batchResult.results.column1.endTime,
             responseTime: batchResult.results.column1.responseTime,
+            performanceMetrics: batchResult.results.column1.performanceMetrics,
+            qualityMetrics: batchResult.results.column1.qualityMetrics,
+            technicalMetadata: batchResult.results.column1.technicalMetadata,
           } : null,
           column2: batchResult.results.column2 ? {
             text: batchResult.results.column2.text,
@@ -126,6 +129,9 @@ function App() {
             startTime: batchResult.results.column2.startTime,
             endTime: batchResult.results.column2.endTime,
             responseTime: batchResult.results.column2.responseTime,
+            performanceMetrics: batchResult.results.column2.performanceMetrics,
+            qualityMetrics: batchResult.results.column2.qualityMetrics,
+            technicalMetadata: batchResult.results.column2.technicalMetadata,
           } : null,
           column3: batchResult.results.column3 ? {
             text: batchResult.results.column3.text,
@@ -135,6 +141,9 @@ function App() {
             startTime: batchResult.results.column3.startTime,
             endTime: batchResult.results.column3.endTime,
             responseTime: batchResult.results.column3.responseTime,
+            performanceMetrics: batchResult.results.column3.performanceMetrics,
+            qualityMetrics: batchResult.results.column3.qualityMetrics,
+            technicalMetadata: batchResult.results.column3.technicalMetadata,
           } : null,
         },
         errors: {
@@ -198,65 +207,67 @@ function App() {
       return;
     }
 
-    // Prompt user for filename
-    const filename = prompt('Enter filename for export (without .json extension):', 'gemini-test-results');
+    // Calculate summary statistics
+    const responses = Object.values(appState.responses).filter(r => r !== null) as EnhancedColumnResponse[];
+    const totalCost = responses.reduce((sum, r) => sum + r.performanceMetrics.estimatedCost, 0);
+    const averageResponseTime = responses.reduce((sum, r) => sum + r.responseTime, 0) / responses.length;
     
-    if (!filename) {
-      return; // User cancelled
-    }
-
-    // Build the export data structure
-    const responses = [];
-    
-    if (appState.responses.column1) {
-      responses.push({
-        model: appState.responses.column1.modelName,
-        response: appState.responses.column1.text
-      });
-    }
-    
-    if (appState.responses.column2) {
-      responses.push({
-        model: appState.responses.column2.modelName,
-        response: appState.responses.column2.text
-      });
-    }
-    
-    if (appState.responses.column3) {
-      responses.push({
-        model: appState.responses.column3.modelName,
-        response: appState.responses.column3.text
-      });
-    }
+    // Find comparison metrics
+    const sortedBySpeed = responses.sort((a, b) => a.responseTime - b.responseTime);
+    const sortedByCost = responses.sort((a, b) => a.performanceMetrics.estimatedCost - b.performanceMetrics.estimatedCost);
+    const sortedByLength = responses.sort((a, b) => b.qualityMetrics.responseLength.characters - a.qualityMetrics.responseLength.characters);
+    const safestResponses = responses.filter(r => r.qualityMetrics.safetyScore === 'Safe');
 
     const exportData = {
-      prompt: appState.currentPrompt,
-      responses: responses,
-      exportedAt: new Date().toISOString(),
-      metadata: {
-        selectedModels: appState.selectedModels,
-        responseTimestamps: {
-          column1: appState.responses.column1?.timestamp || null,
-          column2: appState.responses.column2?.timestamp || null,
-          column3: appState.responses.column3?.timestamp || null,
-        }
-      }
+      session: {
+        timestamp: new Date().toISOString(),
+        prompt: appState.currentPrompt,
+        models_tested: Object.values(appState.selectedModels),
+        total_responses: responses.length,
+        total_cost: totalCost,
+        average_response_time: averageResponseTime,
+      },
+      responses: {
+        column1: appState.responses.column1 ? {
+          response: appState.responses.column1.text,
+          performance_metrics: appState.responses.column1.performanceMetrics,
+          quality_metrics: appState.responses.column1.qualityMetrics,
+          technical_metadata: appState.responses.column1.technicalMetadata,
+        } : null,
+        column2: appState.responses.column2 ? {
+          response: appState.responses.column2.text,
+          performance_metrics: appState.responses.column2.performanceMetrics,
+          quality_metrics: appState.responses.column2.qualityMetrics,
+          technical_metadata: appState.responses.column2.technicalMetadata,
+        } : null,
+        column3: appState.responses.column3 ? {
+          response: appState.responses.column3.text,
+          performance_metrics: appState.responses.column3.performanceMetrics,
+          quality_metrics: appState.responses.column3.qualityMetrics,
+          technical_metadata: appState.responses.column3.technicalMetadata,
+        } : null,
+      },
+      comparison: {
+        fastest_model: sortedBySpeed[0]?.modelName || 'N/A',
+        slowest_model: sortedBySpeed[sortedBySpeed.length - 1]?.modelName || 'N/A',
+        most_cost_effective: sortedByCost[0]?.modelName || 'N/A',
+        longest_response: sortedByLength[0]?.modelName || 'N/A',
+        best_safety_score: safestResponses[0]?.modelName || 'N/A',
+      },
     };
 
     // Create and download the file
     const jsonString = JSON.stringify(exportData, null, 2);
     const blob = new Blob([jsonString], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${filename}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `gemini-comparison-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }, [appState.currentPrompt, appState.responses, appState.selectedModels]);
+  }, [appState.responses, appState.currentPrompt, appState.selectedModels]);
 
   return (
     <div className="app">

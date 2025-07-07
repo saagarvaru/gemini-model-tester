@@ -129,9 +129,75 @@ export interface ColumnError {
   modelId: string;
 }
 
+// Enhanced metrics types
+export interface PerformanceMetrics {
+  responseTime: number;
+  startTime: number;
+  endTime: number;
+  tokenUsage: {
+    input: number;
+    output: number;
+    total: number;
+  };
+  estimatedCost: number;
+  throughput: number; // tokens per second
+  requestSize: number; // bytes
+  responseSize: number; // bytes
+}
+
+export interface QualityMetrics {
+  responseLength: {
+    characters: number;
+    words: number;
+    sentences: number;
+    paragraphs: number;
+    estimatedTokens: number;
+  };
+  estimatedReadingLevel: string;
+  safetyScore: string;
+  finishReason: string;
+  contentCategories: string[];
+  languageDetected: string;
+}
+
+export interface TechnicalMetadata {
+  modelVersion: string;
+  modelName: string;
+  apiVersion: string;
+  requestConfig: {
+    temperature: number;
+    topK: number;
+    topP: number;
+    maxOutputTokens: number;
+    stopSequences?: string[];
+  };
+  safetySettings: Array<{
+    category: string;
+    threshold: string;
+  }>;
+  safetyRatings: Array<{
+    category: string;
+    probability: string;
+  }>;
+  promptFeedback?: {
+    safetyRatings: Array<{
+      category: string;
+      probability: string;
+    }>;
+  };
+  apiResponseHeaders?: Record<string, string>;
+  candidateCount: number;
+}
+
+export interface EnhancedColumnResponse extends ColumnResponse {
+  performanceMetrics: PerformanceMetrics;
+  qualityMetrics: QualityMetrics;
+  technicalMetadata: TechnicalMetadata;
+}
+
 export interface AppState {
   selectedModels: Record<ColumnId, string>;
-  responses: Record<ColumnId, ColumnResponse | null>;
+  responses: Record<ColumnId, EnhancedColumnResponse | null>;
   loading: Record<ColumnId, boolean>;
   errors: Record<ColumnId, ColumnError | null>;
   currentPrompt: string;
@@ -144,7 +210,7 @@ export interface ColumnProps {
   columnId: ColumnId;
   selectedModel: string;
   onModelChange: (columnId: ColumnId, modelId: string) => void;
-  response: ColumnResponse | null;
+  response: EnhancedColumnResponse | null;
   isLoading: boolean;
   error: ColumnError | null;
   availableModels: GeminiModels;
@@ -166,7 +232,7 @@ export interface PromptInputProps {
 }
 
 export interface ResponseDisplayProps {
-  response: ColumnResponse | null;
+  response: EnhancedColumnResponse | null;
   isLoading: boolean;
   error: ColumnError | null;
   modelName: string;
@@ -193,6 +259,9 @@ export interface GenerateContentResult {
   startTime: number;
   endTime: number;
   responseTime: number;
+  performanceMetrics: PerformanceMetrics;
+  qualityMetrics: QualityMetrics;
+  technicalMetadata: TechnicalMetadata;
 }
 
 export interface BatchGenerateResult {
@@ -243,4 +312,29 @@ export class ValidationError extends Error {
     super(message);
     this.name = 'ValidationError';
   }
+}
+
+// Export structure for JSON
+export interface SessionExport {
+  session: {
+    timestamp: string;
+    prompt: string;
+    models_tested: string[];
+    total_responses: number;
+    total_cost: number;
+    average_response_time: number;
+  };
+  responses: Record<ColumnId, {
+    response: string;
+    performance_metrics: PerformanceMetrics;
+    quality_metrics: QualityMetrics;
+    technical_metadata: TechnicalMetadata;
+  } | null>;
+  comparison: {
+    fastest_model: string;
+    slowest_model: string;
+    most_cost_effective: string;
+    longest_response: string;
+    best_safety_score: string;
+  };
 } 

@@ -102,8 +102,6 @@ body {
   flex-shrink: 0;
 }
 
-
-
 .column-content {
   flex: 1;
   padding: 1.5rem;
@@ -116,8 +114,6 @@ body {
 .model-selector {
   width: 100%;
 }
-
-
 
 .model-selector-dropdown {
   width: 100%;
@@ -143,8 +139,6 @@ body {
   cursor: not-allowed;
   opacity: 0.7;
 }
-
-
 
 /* Response Display */
 .response-display {
@@ -234,8 +228,6 @@ body {
   color: #856404;
 }
 
-
-
 .response-content {
   flex: 1;
   padding: 1rem;
@@ -254,21 +246,33 @@ body {
   margin: 0 0 1rem 0;
 }
 
-
-
 .response-footer {
-  padding: 1rem;
+  padding: 8px 12px;
   background-color: #f8f9fa;
   border-top: 1px solid #e9ecef;
   flex-shrink: 0;
 }
 
-.response-stats {
+.response-stats-compact {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  font-size: 0.8rem;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 10px;
   color: #6c757d;
+}
+
+.metrics-toggle-inline {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 10px;
+  cursor: pointer;
+  margin-left: 12px;
+  text-decoration: underline;
+}
+
+.metrics-toggle-inline:hover {
+  color: #333;
 }
 
 /* Prompt Input */
@@ -420,6 +424,71 @@ body {
   box-shadow: 0 1px 4px rgba(102, 126, 234, 0.2);
 }
 
+/* Metrics Panel Styles */
+.metrics-toggle {
+  margin-top: 8px;
+  text-align: center;
+}
+
+.metrics-toggle-text {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 11px;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.metrics-toggle-text:hover {
+  color: #333;
+}
+
+.metrics-container {
+  margin-top: 4px;
+  border-top: 1px solid #eee;
+  padding-top: 4px;
+}
+
+.metrics-panel {
+  font-size: 12px;
+  color: #666;
+}
+
+.metrics-section {
+  margin-bottom: 4px;
+}
+
+.metrics-section:last-child {
+  margin-bottom: 0;
+}
+
+.metrics-section-header {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 12px;
+  color: #666;
+  padding: 0;
+  text-align: left;
+  font-weight: normal;
+  text-decoration: underline;
+}
+
+.metrics-section-header:hover {
+  color: #333;
+}
+
+.metrics-content {
+  margin-top: 2px;
+  margin-left: 8px;
+}
+
+.metric-line {
+  margin-bottom: 1px;
+  font-size: 10px;
+  color: #777;
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
   .columns-container {
@@ -483,4 +552,5 @@ body {
     flex-direction: column;
     gap: 0.5rem;
   }
+  
 }
