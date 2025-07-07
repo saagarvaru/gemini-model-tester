@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import type { PromptInputProps } from '../types/gemini';
 
 const PromptInput: React.FC<PromptInputProps> = ({
@@ -9,6 +9,19 @@ const PromptInput: React.FC<PromptInputProps> = ({
 }) => {
   const [localPrompt, setLocalPrompt] = useState(currentPrompt || '');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Sync local state with currentPrompt prop
+  useEffect(() => {
+    if (currentPrompt !== localPrompt) {
+      setLocalPrompt(currentPrompt || '');
+      
+      // Auto-resize textarea when content changes
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+        textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
+      }
+    }
+  }, [currentPrompt, localPrompt]);
 
   const handleSubmit = useCallback(() => {
     if (localPrompt.trim() && !isLoading) {
