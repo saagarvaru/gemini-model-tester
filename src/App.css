@@ -90,7 +90,7 @@ body {
   gap: 1.5rem;
   flex: 1;
   overflow: visible;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0rem;
   padding: 1rem;
   min-height: 0;
 }
