@@ -189,8 +189,87 @@ function App() {
 
   const isAnyLoading = appState.loading.column1 || appState.loading.column2 || appState.loading.column3;
 
+  const handleExport = useCallback(() => {
+    // Check if we have any responses to export
+    const hasResponses = appState.responses.column1 || appState.responses.column2 || appState.responses.column3;
+    
+    if (!hasResponses || !appState.currentPrompt.trim()) {
+      alert('Please submit a prompt and get responses before exporting.');
+      return;
+    }
+
+    // Prompt user for filename
+    const filename = prompt('Enter filename for export (without .json extension):', 'gemini-test-results');
+    
+    if (!filename) {
+      return; // User cancelled
+    }
+
+    // Build the export data structure
+    const responses = [];
+    
+    if (appState.responses.column1) {
+      responses.push({
+        model: appState.responses.column1.modelName,
+        response: appState.responses.column1.text
+      });
+    }
+    
+    if (appState.responses.column2) {
+      responses.push({
+        model: appState.responses.column2.modelName,
+        response: appState.responses.column2.text
+      });
+    }
+    
+    if (appState.responses.column3) {
+      responses.push({
+        model: appState.responses.column3.modelName,
+        response: appState.responses.column3.text
+      });
+    }
+
+    const exportData = {
+      prompt: appState.currentPrompt,
+      responses: responses,
+      exportedAt: new Date().toISOString(),
+      metadata: {
+        selectedModels: appState.selectedModels,
+        responseTimestamps: {
+          column1: appState.responses.column1?.timestamp || null,
+          column2: appState.responses.column2?.timestamp || null,
+          column3: appState.responses.column3?.timestamp || null,
+        }
+      }
+    };
+
+    // Create and download the file
+    const jsonString = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([jsonString], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${filename}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    URL.revokeObjectURL(url);
+  }, [appState.currentPrompt, appState.responses, appState.selectedModels]);
+
   return (
     <div className="app">
+      <header className="app-header">
+        <h1 className="app-title">Gemini Model Testing</h1>
+        <button 
+          className="export-button nav-style"
+          onClick={handleExport}
+          disabled={isAnyLoading || !appState.currentPrompt.trim() || !(appState.responses.column1 || appState.responses.column2 || appState.responses.column3)}
+        >
+          Export Results
+        </button>
+      </header>
       <main className="app-main">
         <div className="columns-container">
           <Column

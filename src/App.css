@@ -28,6 +28,25 @@ body {
   flex-direction: column;
 }
 
+.app-header {
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+}
+
 .app-main {
   flex: 1;
   padding: 1.5rem;
@@ -365,6 +384,42 @@ body {
   color: #856404;
 }
 
+/* Export Button (Nav Style) */
+.export-button.nav-style {
+  background-color: #667eea;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  white-space: nowrap;
+}
+
+.export-button.nav-style:hover:not(:disabled) {
+  background-color: #5a67d8;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.export-button.nav-style:disabled {
+  background-color: #e9ecef;
+  color: #6c757d;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.export-button.nav-style:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 1px 4px rgba(102, 126, 234, 0.2);
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
   .columns-container {
@@ -388,7 +443,18 @@ body {
     padding: 1rem;
   }
   
-
+  .app-header {
+    padding: 0.75rem 1rem;
+  }
+  
+  .app-title {
+    font-size: 1.25rem;
+  }
+  
+  .export-button.nav-style {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+  }
   
   .prompt-input-wrapper {
     border-radius: 20px;
@@ -404,8 +470,6 @@ body {
     width: 18px;
     height: 18px;
   }
-  
-
   
   .columns-container {
     gap: 0.75rem;
