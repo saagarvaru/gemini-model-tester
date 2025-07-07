@@ -14,14 +14,16 @@ const PromptInput: React.FC<PromptInputProps> = ({
   useEffect(() => {
     if (currentPrompt !== localPrompt) {
       setLocalPrompt(currentPrompt || '');
-      
-      // Auto-resize textarea when content changes
-      if (textareaRef.current) {
-        textareaRef.current.style.height = 'auto';
-        textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
-      }
     }
   }, [currentPrompt, localPrompt]);
+
+  // Auto-resize textarea when content changes
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
+    }
+  }, [localPrompt]);
 
   const handleSubmit = useCallback(() => {
     if (localPrompt.trim() && !isLoading) {
@@ -79,20 +81,18 @@ const PromptInput: React.FC<PromptInputProps> = ({
           </button>
         </div>
         
-        {localPrompt.length > 0 && (
-          <div className="prompt-footer">
-            <div className="prompt-stats">
-              <span className="char-count">
-                {localPrompt.length} characters
+        <div className="prompt-footer">
+          <div className="prompt-stats">
+            <span className="char-count">
+              {localPrompt.length} characters
+            </span>
+            {localPrompt.length > 25000 && (
+              <span className="warning">
+                ⚠️ Very long prompt (may be truncated)
               </span>
-              {localPrompt.length > 25000 && (
-                <span className="warning">
-                  ⚠️ Very long prompt (may be truncated)
-                </span>
-              )}
-            </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
