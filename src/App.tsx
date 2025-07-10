@@ -6,6 +6,7 @@ import { GeminiService } from './services/GeminiService';
 import Column from './components/Column';
 import PromptComposer from './components/PromptComposer';
 import ApiKeyInput from './components/ApiKeyInput';
+import { Analytics } from "@vercel/analytics/next";
 import { 
   loadTemplates, 
   addTemplate, 
@@ -502,6 +503,8 @@ function App() {
       {!geminiService && (
         <ApiKeyInput onApiKeySubmit={handleApiKeySubmit} />
       )}
+      
+      <Analytics />
     </div>
   );
 }
