@@ -196,3 +196,4 @@ target/
 # Error logs
 error.log
 debug.log
+.vercel

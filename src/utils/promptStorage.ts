@@ -10,7 +10,12 @@ const STORAGE_KEYS = {
 // API Key Management
 export const saveApiKey = (apiKey: string): void => {
   try {
-    localStorage.setItem(STORAGE_KEYS.API_KEY, apiKey);
+    // Only save if the API key is not empty
+    if (apiKey && apiKey.trim() !== '') {
+      localStorage.setItem(STORAGE_KEYS.API_KEY, apiKey.trim());
+    } else {
+      console.warn('Cannot save empty API key');
+    }
   } catch (error) {
     console.error('Failed to save API key:', error);
   }
@@ -18,7 +23,9 @@ export const saveApiKey = (apiKey: string): void => {
 
 export const loadApiKey = (): string | null => {
   try {
-    return localStorage.getItem(STORAGE_KEYS.API_KEY);
+    const apiKey = localStorage.getItem(STORAGE_KEYS.API_KEY);
+    // Return null if the key is empty or only whitespace
+    return apiKey && apiKey.trim() !== '' ? apiKey : null;
   } catch (error) {
     console.error('Failed to load API key:', error);
     return null;

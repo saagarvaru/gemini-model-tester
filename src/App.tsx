@@ -67,14 +67,26 @@ function App() {
       // Check localStorage first, then fall back to environment variables
       const storedApiKey = loadApiKey();
       const envApiKey = import.meta.env.VITE_GEMINI_API_KEY;
-      const apiKey = storedApiKey || envApiKey;
+      
+      // Check for valid (non-empty) API keys
+      const validStoredKey = storedApiKey && storedApiKey.trim() !== '';
+      const validEnvKey = envApiKey && envApiKey.trim() !== '';
+      
+      const apiKey = validStoredKey ? storedApiKey : (validEnvKey ? envApiKey : null);
       const baseUrl = import.meta.env.VITE_GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta';
 
       if (apiKey) {
-        const service = new GeminiService({ apiKey, baseUrl });
-        setGeminiService(service);
+        try {
+          const service = new GeminiService({ apiKey, baseUrl });
+          setGeminiService(service);
+          console.log('Gemini service initialized successfully');
+        } catch (error) {
+          console.error('Failed to initialize Gemini service:', error);
+          setGeminiService(null);
+        }
       } else {
-        console.warn('No API key found in localStorage or environment variables');
+        console.warn('No valid API key found in localStorage or environment variables');
+        setGeminiService(null);
       }
     };
 
