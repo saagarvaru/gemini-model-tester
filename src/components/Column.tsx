@@ -9,7 +9,7 @@ const Column: React.FC<ColumnProps> = ({
   response,
   isLoading,
   error,
-  availableModels,
+  availableModels
 }) => {
   const handleModelChange = (modelId: string) => {
     onModelChange(columnId, modelId);
