@@ -221,6 +221,7 @@ export interface PromptComposerProps {
   content: string;
   templates: PromptTemplate[];
   width: number;
+  isLoading: boolean;
   onToggleVisibility: () => void;
   onContentChange: (content: string) => void;
   onSendToMainInput: () => void;

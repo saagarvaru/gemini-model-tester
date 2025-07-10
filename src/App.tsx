@@ -4,7 +4,6 @@ import { GEMINI_MODELS, DEFAULT_MODEL_SELECTION } from './config/geminiModels';
 import { MODEL_CATEGORIES } from './types/gemini';
 import { GeminiService } from './services/GeminiService';
 import Column from './components/Column';
-import PromptInput from './components/PromptInput';
 import PromptComposer from './components/PromptComposer';
 import ApiKeyInput from './components/ApiKeyInput';
 import { 
@@ -107,141 +106,7 @@ function App() {
     }));
   }, []);
 
-  const handlePromptChange = useCallback((prompt: string) => {
-    setAppState(prev => ({
-      ...prev,
-      currentPrompt: prompt,
-    }));
-  }, []);
 
-  const handlePromptSubmit = useCallback(async (prompt: string) => {
-    if (!geminiService) {
-      console.error('Gemini service not initialized');
-      return;
-    }
-
-    if (!prompt.trim()) {
-      return;
-    }
-
-    // Add to history
-    addToHistory(prompt);
-
-    // Set loading states
-    setAppState(prev => ({
-      ...prev,
-      loading: {
-        column1: true,
-        column2: true,
-        column3: true,
-      },
-      errors: {
-        column1: null,
-        column2: null,
-        column3: null,
-      },
-    }));
-
-    try {
-      const batchResult = await geminiService.generateContentBatch(
-        appState.selectedModels,
-        prompt
-      );
-
-      setAppState(prev => ({
-        ...prev,
-        loading: {
-          column1: false,
-          column2: false,
-          column3: false,
-        },
-        responses: {
-          column1: batchResult.results.column1 ? {
-            text: batchResult.results.column1.text,
-            timestamp: batchResult.results.column1.timestamp,
-            modelId: batchResult.results.column1.modelId,
-            modelName: GEMINI_MODELS[batchResult.results.column1.modelId]?.name || batchResult.results.column1.modelId,
-            startTime: batchResult.results.column1.startTime,
-            endTime: batchResult.results.column1.endTime,
-            responseTime: batchResult.results.column1.responseTime,
-            performanceMetrics: batchResult.results.column1.performanceMetrics,
-            qualityMetrics: batchResult.results.column1.qualityMetrics,
-            technicalMetadata: batchResult.results.column1.technicalMetadata,
-          } : null,
-          column2: batchResult.results.column2 ? {
-            text: batchResult.results.column2.text,
-            timestamp: batchResult.results.column2.timestamp,
-            modelId: batchResult.results.column2.modelId,
-            modelName: GEMINI_MODELS[batchResult.results.column2.modelId]?.name || batchResult.results.column2.modelId,
-            startTime: batchResult.results.column2.startTime,
-            endTime: batchResult.results.column2.endTime,
-            responseTime: batchResult.results.column2.responseTime,
-            performanceMetrics: batchResult.results.column2.performanceMetrics,
-            qualityMetrics: batchResult.results.column2.qualityMetrics,
-            technicalMetadata: batchResult.results.column2.technicalMetadata,
-          } : null,
-          column3: batchResult.results.column3 ? {
-            text: batchResult.results.column3.text,
-            timestamp: batchResult.results.column3.timestamp,
-            modelId: batchResult.results.column3.modelId,
-            modelName: GEMINI_MODELS[batchResult.results.column3.modelId]?.name || batchResult.results.column3.modelId,
-            startTime: batchResult.results.column3.startTime,
-            endTime: batchResult.results.column3.endTime,
-            responseTime: batchResult.results.column3.responseTime,
-            performanceMetrics: batchResult.results.column3.performanceMetrics,
-            qualityMetrics: batchResult.results.column3.qualityMetrics,
-            technicalMetadata: batchResult.results.column3.technicalMetadata,
-          } : null,
-        },
-        errors: {
-          column1: batchResult.errors.column1 ? {
-            message: batchResult.errors.column1.message,
-            timestamp: Date.now(),
-            modelId: appState.selectedModels.column1,
-          } : null,
-          column2: batchResult.errors.column2 ? {
-            message: batchResult.errors.column2.message,
-            timestamp: Date.now(),
-            modelId: appState.selectedModels.column2,
-          } : null,
-          column3: batchResult.errors.column3 ? {
-            message: batchResult.errors.column3.message,
-            timestamp: Date.now(),
-            modelId: appState.selectedModels.column3,
-          } : null,
-        },
-      }));
-    } catch (error) {
-      console.error('Batch generation failed:', error);
-      
-      // Set error for all columns
-      setAppState(prev => ({
-        ...prev,
-        loading: {
-          column1: false,
-          column2: false,
-          column3: false,
-        },
-        errors: {
-          column1: {
-            message: error instanceof Error ? error.message : 'Unknown error occurred',
-            timestamp: Date.now(),
-            modelId: prev.selectedModels.column1,
-          },
-          column2: {
-            message: error instanceof Error ? error.message : 'Unknown error occurred',
-            timestamp: Date.now(),
-            modelId: prev.selectedModels.column2,
-          },
-          column3: {
-            message: error instanceof Error ? error.message : 'Unknown error occurred',
-            timestamp: Date.now(),
-            modelId: prev.selectedModels.column3,
-          },
-        },
-      }));
-    }
-  }, [geminiService, appState.selectedModels]);
 
   const isAnyLoading = appState.loading.column1 || appState.loading.column2 || appState.loading.column3;
 
@@ -286,12 +151,96 @@ function App() {
     });
   }, []);
 
-  const handleComposerSendToMainInput = useCallback(() => {
+  const handleComposerSendToMainInput = useCallback(async () => {
+    const prompt = appState.promptComposer.content;
+    
+    if (!geminiService) {
+      console.error('Gemini service not initialized');
+      return;
+    }
+
+    if (!prompt.trim()) {
+      return;
+    }
+
+    // Add to history
+    addToHistory(prompt);
+
+    // Set current prompt and loading states
     setAppState(prev => ({
       ...prev,
-      currentPrompt: prev.promptComposer.content,
+      currentPrompt: prompt,
+      loading: {
+        column1: true,
+        column2: true,
+        column3: true,
+      },
+      errors: {
+        column1: null,
+        column2: null,
+        column3: null,
+      },
+      responses: {
+        column1: null,
+        column2: null,
+        column3: null,
+      },
     }));
-  }, []);
+
+    // Process each model individually and update UI as results come in
+    const columnIds: ColumnId[] = ['column1', 'column2', 'column3'];
+    
+    columnIds.forEach(async (columnId) => {
+      const modelId = appState.selectedModels[columnId];
+      
+      try {
+        const result = await geminiService.generateContent(modelId, prompt);
+        
+        // Update state immediately when this model completes
+        setAppState(prev => ({
+          ...prev,
+          loading: {
+            ...prev.loading,
+            [columnId]: false,
+          },
+          responses: {
+            ...prev.responses,
+            [columnId]: {
+              text: result.text,
+              timestamp: result.timestamp,
+              modelId: result.modelId,
+              modelName: GEMINI_MODELS[result.modelId]?.name || result.modelId,
+              startTime: result.startTime,
+              endTime: result.endTime,
+              responseTime: result.responseTime,
+              performanceMetrics: result.performanceMetrics,
+              qualityMetrics: result.qualityMetrics,
+              technicalMetadata: result.technicalMetadata,
+            },
+          },
+        }));
+      } catch (error) {
+        console.error(`Error generating content for ${columnId}:`, error);
+        
+        // Update state with error for this specific column
+        setAppState(prev => ({
+          ...prev,
+          loading: {
+            ...prev.loading,
+            [columnId]: false,
+          },
+          errors: {
+            ...prev.errors,
+            [columnId]: {
+              message: error instanceof Error ? error.message : 'Unknown error occurred',
+              timestamp: Date.now(),
+              modelId,
+            },
+          },
+        }));
+      }
+    });
+  }, [geminiService, appState.selectedModels, appState.promptComposer.content]);
 
   const handleComposerSaveTemplate = useCallback((name: string, category: string, description?: string) => {
     const newTemplate = addTemplate({
@@ -500,6 +449,22 @@ function App() {
       </header>
       
       <div className="app-container">
+        <PromptComposer
+          isVisible={appState.promptComposer.isVisible}
+          content={appState.promptComposer.content}
+          templates={appState.promptComposer.templates}
+          width={appState.promptComposer.width}
+          isLoading={isAnyLoading}
+          onToggleVisibility={handleComposerToggle}
+          onContentChange={handleComposerContentChange}
+          onSendToMainInput={handleComposerSendToMainInput}
+          onSaveTemplate={handleComposerSaveTemplate}
+          onLoadTemplate={handleComposerLoadTemplate}
+          onDeleteTemplate={handleComposerDeleteTemplate}
+          onClear={handleComposerClear}
+          onWidthChange={handleComposerWidthChange}
+        />
+
         <main className="app-main-with-composer">
           <div className="columns-container">
             <Column
@@ -530,29 +495,7 @@ function App() {
               availableModels={appState.availableModels}
             />
           </div>
-
-          <PromptInput
-            onSubmit={handlePromptSubmit}
-            isLoading={isAnyLoading}
-            currentPrompt={appState.currentPrompt}
-            onPromptChange={handlePromptChange}
-          />
         </main>
-
-        <PromptComposer
-          isVisible={appState.promptComposer.isVisible}
-          content={appState.promptComposer.content}
-          templates={appState.promptComposer.templates}
-          width={appState.promptComposer.width}
-          onToggleVisibility={handleComposerToggle}
-          onContentChange={handleComposerContentChange}
-          onSendToMainInput={handleComposerSendToMainInput}
-          onSaveTemplate={handleComposerSaveTemplate}
-          onLoadTemplate={handleComposerLoadTemplate}
-          onDeleteTemplate={handleComposerDeleteTemplate}
-          onClear={handleComposerClear}
-          onWidthChange={handleComposerWidthChange}
-        />
       </div>
 
       {!geminiService && (

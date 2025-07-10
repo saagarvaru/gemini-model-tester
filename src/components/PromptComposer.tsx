@@ -9,6 +9,7 @@ const PromptComposer: React.FC<PromptComposerProps> = ({
   content,
   templates,
   width,
+  isLoading,
   onToggleVisibility,
   onContentChange,
   onSendToMainInput,
@@ -38,7 +39,7 @@ const PromptComposer: React.FC<PromptComposerProps> = ({
   }, [onContentChange]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    // Ctrl/Cmd + Enter to send to main input
+    // Ctrl/Cmd + Enter to execute analysis
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
       onSendToMainInput();
@@ -90,7 +91,7 @@ const PromptComposer: React.FC<PromptComposerProps> = ({
     if (!isResizing || !composerRef.current) return;
     
     const rect = composerRef.current.getBoundingClientRect();
-    const newWidth = rect.right - e.clientX;
+    const newWidth = e.clientX - rect.left;
     const minWidth = 300;
     const maxWidth = 600;
     
@@ -211,10 +212,10 @@ const PromptComposer: React.FC<PromptComposerProps> = ({
             placeholder="Compose your prompt here...
 
 Tips:
-• Use Ctrl/Cmd + Enter to send to main input
+• Use Ctrl/Cmd + Enter to execute analysis
 • Use Ctrl/Cmd + S to save as template
 • Paste large prompts and edit them freely
-• Drag the left edge to resize"
+• Drag the right edge to resize"
             className="prompt-composer-textarea"
             spellCheck={false}
           />
@@ -253,10 +254,10 @@ Tips:
               type="button"
               onClick={handleSendToMainInput}
               className="composer-button composer-button-primary"
-              disabled={!localContent.trim()}
-              title="Send to main input (Ctrl/Cmd + Enter)"
+              disabled={!localContent.trim() || isLoading}
+              title="Execute analysis across all models (Ctrl/Cmd + Enter)"
             >
-              Send to Input
+              {isLoading ? 'Analyzing...' : 'Execute Analysis'}
             </button>
           </div>
         </div>
