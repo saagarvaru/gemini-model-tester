@@ -19,6 +19,7 @@ import {
   clearApiKey
 } from './utils/promptStorage';
 import './App.css';
+import './styles/markdown.css';
 
 function App() {
   const [appState, setAppState] = useState<AppState>(() => {

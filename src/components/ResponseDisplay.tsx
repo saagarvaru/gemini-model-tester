@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { ResponseDisplayProps } from '../types/gemini';
 import MetricsPanel from './MetricsPanel';
+import MarkdownRenderer from './MarkdownRenderer';
 
 const ResponseDisplay: React.FC<ResponseDisplayProps> = ({
   response,
@@ -61,23 +62,19 @@ const ResponseDisplay: React.FC<ResponseDisplayProps> = ({
   return (
     <div className="response-display success">
       <div className="response-content">
-        <div className="response-text">
-          {response.text.split('\n').map((line, index) => (
-            <p key={index}>{line || '\u00A0'}</p>
-          ))}
-        </div>
-      </div>
-
-      <div className="response-footer">
-        <div className="response-stats-compact">
-          <span>{response.text.length} chars • {response.text.split(/\s+/).filter(word => word.length > 0).length} words • {formatResponseTime(response.responseTime)} • {formatTimestamp(response.timestamp)}</span>
-          <button 
-            className="metrics-toggle-inline"
-            onClick={() => setShowMetrics(!showMetrics)}
-            title="Toggle detailed metrics"
-          >
-            {showMetrics ? '− metrics' : '+ metrics'}
-          </button>
+        <MarkdownRenderer content={response.text} />
+        
+        <div className="response-metadata">
+          <div className="response-stats-inline">
+            <span>{response.text.length} chars • {response.text.split(/\s+/).filter(word => word.length > 0).length} words • {formatResponseTime(response.responseTime)} • {formatTimestamp(response.timestamp)}</span>
+            <button 
+              className="metrics-toggle-inline"
+              onClick={() => setShowMetrics(!showMetrics)}
+              title="Toggle detailed metrics"
+            >
+              {showMetrics ? '− metrics' : '+ metrics'}
+            </button>
+          </div>
         </div>
       </div>
 

@@ -75,7 +75,7 @@ body {
 .api-warning {
   background-color: #fff3cd;
   border: 1px solid #ffeaa7;
-  border-radius: 8px;
+  border-radius: 12px;
   padding: 1rem;
   margin: 1rem 0;
   text-align: center;
@@ -87,7 +87,7 @@ body {
 /* Columns Layout */
 .columns-container {
   display: flex;
-  gap: 1.5rem;
+  gap: 1rem;
   flex: 1;
   overflow: visible;
   margin-bottom: 0rem;
@@ -97,7 +97,7 @@ body {
 
 .column {
   background: white;
-  border-radius: 12px;
+  border-radius: 8px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   display: flex;
@@ -117,7 +117,7 @@ body {
 
 .column-content {
   flex: 1;
-  padding: 1.5rem;
+  padding: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -156,7 +156,6 @@ body {
 /* Response Display */
 .response-display {
   flex: 1;
-  border-radius: 8px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -167,7 +166,6 @@ body {
   align-items: center;
   justify-content: center;
   background-color: #f8f9fa;
-  border: 2px dashed #dee2e6;
 }
 
 .response-display.error {
@@ -179,13 +177,12 @@ body {
   align-items: center;
   justify-content: center;
   background-color: #f8f9fa;
-  border: 2px dashed #dee2e6;
   color: #9ca3af;
 }
 
 .empty-state {
   text-align: center;
-  padding: 2rem 1rem;
+  padding: 0;
 }
 
 .empty-state p {
@@ -197,6 +194,7 @@ body {
 .response-display.success {
   background-color: white;
   border: 1px solid #e9ecef;
+  position: relative;
 }
 
 .loading-spinner {
@@ -243,9 +241,10 @@ body {
 
 .response-content {
   flex: 1;
-  padding: 1rem;
+  padding: 0;
   overflow-y: auto;
   min-height: 0;
+  padding-bottom: 60px; /* Space for fixed bottom bar */
 }
 
 .response-text {
@@ -259,18 +258,22 @@ body {
   margin: 0 0 1rem 0;
 }
 
-.response-footer {
-  padding: 8px 12px;
-  background-color: #f8f9fa;
+.response-metadata {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0.75rem;
   border-top: 1px solid #e9ecef;
-  flex-shrink: 0;
+  background-color: white;
+  z-index: 1;
 }
 
-.response-stats-compact {
+.response-stats-inline {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 10px;
+  font-size: 11px;
   color: #6c757d;
 }
 
