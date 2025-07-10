@@ -6,6 +6,7 @@ import { GeminiService } from './services/GeminiService';
 import Column from './components/Column';
 import PromptInput from './components/PromptInput';
 import PromptComposer from './components/PromptComposer';
+import ApiKeyInput from './components/ApiKeyInput';
 import { 
   loadTemplates, 
   addTemplate, 
@@ -13,7 +14,10 @@ import {
   loadHistory, 
   addToHistory, 
   loadComposerState, 
-  saveComposerState 
+  saveComposerState,
+  loadApiKey,
+  saveApiKey,
+  clearApiKey
 } from './utils/promptStorage';
 import './App.css';
 
@@ -59,15 +63,22 @@ function App() {
 
   // Initialize Gemini service
   useEffect(() => {
-    const apiKey = import.meta.env.VITE_GEMINI_API_KEY;
-    const baseUrl = import.meta.env.VITE_GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta';
+    const initializeGeminiService = () => {
+      // Check localStorage first, then fall back to environment variables
+      const storedApiKey = loadApiKey();
+      const envApiKey = import.meta.env.VITE_GEMINI_API_KEY;
+      const apiKey = storedApiKey || envApiKey;
+      const baseUrl = import.meta.env.VITE_GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta';
 
-    if (apiKey) {
-      const service = new GeminiService({ apiKey, baseUrl });
-      setGeminiService(service);
-    } else {
-      console.warn('VITE_GEMINI_API_KEY not found in environment variables');
-    }
+      if (apiKey) {
+        const service = new GeminiService({ apiKey, baseUrl });
+        setGeminiService(service);
+      } else {
+        console.warn('No API key found in localStorage or environment variables');
+      }
+    };
+
+    initializeGeminiService();
   }, []);
 
   const handleModelChange = useCallback((columnId: ColumnId, modelId: string) => {
@@ -347,6 +358,31 @@ function App() {
     });
   }, []);
 
+  const handleApiKeySubmit = useCallback((apiKey: string) => {
+    try {
+      // Save to localStorage
+      saveApiKey(apiKey);
+      
+      // Initialize Gemini service with the new API key
+      const baseUrl = import.meta.env.VITE_GEMINI_BASE_URL || 'https://generativelanguage.googleapis.com/v1beta';
+      const service = new GeminiService({ apiKey, baseUrl });
+      setGeminiService(service);
+      
+      console.log('API key saved and Gemini service initialized');
+    } catch (error) {
+      console.error('Failed to initialize Gemini service:', error);
+      alert('Failed to initialize Gemini service. Please check your API key.');
+    }
+  }, []);
+
+  const handleClearApiKey = useCallback(() => {
+    if (confirm('Are you sure you want to clear your saved API key? You will need to enter it again.')) {
+      clearApiKey();
+      setGeminiService(null);
+      console.log('API key cleared');
+    }
+  }, []);
+
   const handleExport = useCallback(() => {
     // Check if we have any responses to export
     const hasResponses = appState.responses.column1 || appState.responses.column2 || appState.responses.column3;
@@ -439,6 +475,15 @@ function App() {
           >
             Export Results
           </button>
+          {geminiService && (
+            <button 
+              className="export-button nav-style"
+              onClick={handleClearApiKey}
+              style={{ background: '#dc3545' }}
+            >
+              Clear API Key
+            </button>
+          )}
         </div>
       </header>
       
@@ -499,9 +544,7 @@ function App() {
       </div>
 
       {!geminiService && (
-        <div className="api-warning">
-          ⚠️ Please set your VITE_GEMINI_API_KEY in the .env file to start testing models.
-        </div>
+        <ApiKeyInput onApiKeySubmit={handleApiKeySubmit} />
       )}
     </div>
   );

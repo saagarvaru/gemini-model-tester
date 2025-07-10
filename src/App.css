@@ -1512,3 +1512,154 @@ body {
     max-height: 200px;
   }
 }
+
+/* API Key Input */
+.api-key-input {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  padding: 2rem;
+  margin: 1rem auto;
+  max-width: 600px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.api-key-input-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.api-key-input-header h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.api-key-input-header p {
+  margin: 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+.api-key-form {
+  margin-bottom: 2rem;
+}
+
+.api-key-input-group {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.api-key-input-field {
+  flex: 1;
+  padding: 0.75rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.api-key-input-field:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.api-key-input-field.error {
+  border-color: #dc3545;
+}
+
+.api-key-input-field:disabled {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.api-key-submit-button {
+  padding: 0.75rem 1.5rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.api-key-submit-button:hover:not(:disabled) {
+  background: #5a6fd8;
+}
+
+.api-key-submit-button:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.api-key-error {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+}
+
+.api-key-help {
+  border-top: 1px solid #e9ecef;
+  padding-top: 1.5rem;
+}
+
+.api-key-help h4 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.api-key-help ol {
+  margin: 0 0 1.5rem 0;
+  padding-left: 1.5rem;
+}
+
+.api-key-help li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.api-key-help a {
+  color: #667eea;
+  text-decoration: none;
+}
+
+.api-key-help a:hover {
+  text-decoration: underline;
+}
+
+.api-key-security-note {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #666;
+}
+
+.api-key-security-note strong {
+  color: #333;
+}
+
+@media (max-width: 768px) {
+  .api-key-input {
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+  
+  .api-key-input-group {
+    flex-direction: column;
+  }
+  
+  .api-key-submit-button {
+    width: 100%;
+  }
+}

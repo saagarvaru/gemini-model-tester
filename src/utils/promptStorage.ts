@@ -4,6 +4,33 @@ const STORAGE_KEYS = {
   TEMPLATES: 'gemini-prompt-templates',
   HISTORY: 'gemini-prompt-history',
   COMPOSER_STATE: 'gemini-composer-state',
+  API_KEY: 'gemini-api-key',
+};
+
+// API Key Management
+export const saveApiKey = (apiKey: string): void => {
+  try {
+    localStorage.setItem(STORAGE_KEYS.API_KEY, apiKey);
+  } catch (error) {
+    console.error('Failed to save API key:', error);
+  }
+};
+
+export const loadApiKey = (): string | null => {
+  try {
+    return localStorage.getItem(STORAGE_KEYS.API_KEY);
+  } catch (error) {
+    console.error('Failed to load API key:', error);
+    return null;
+  }
+};
+
+export const clearApiKey = (): void => {
+  try {
+    localStorage.removeItem(STORAGE_KEYS.API_KEY);
+  } catch (error) {
+    console.error('Failed to clear API key:', error);
+  }
 };
 
 // Template Management
