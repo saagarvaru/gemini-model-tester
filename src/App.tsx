@@ -441,7 +441,7 @@ function App() {
             <button 
               className="export-button nav-style"
               onClick={handleClearApiKey}
-              style={{ background: '#dc3545' }}
+              style={{ background: '#808080' }}
             >
               Clear API Key
             </button>
