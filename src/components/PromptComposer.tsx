@@ -1,8 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 import type { PromptComposerProps } from '../types/gemini';
 import TemplateManager from './TemplateManager';
-import DefaultPromptsPanel from './DefaultPromptsPanel';
-import type { DefaultPrompt } from '../config/defaultPrompts';
 
 const PromptComposer: React.FC<PromptComposerProps> = ({
   isVisible,
@@ -20,7 +18,6 @@ const PromptComposer: React.FC<PromptComposerProps> = ({
   onWidthChange,
 }) => {
   const [showTemplateManager, setShowTemplateManager] = useState(false);
-  const [showDefaultPrompts, setShowDefaultPrompts] = useState(false);
   const [localContent, setLocalContent] = useState(content);
   const [isResizing, setIsResizing] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -73,11 +70,7 @@ const PromptComposer: React.FC<PromptComposerProps> = ({
     onClear();
   }, [localContent, onClear]);
 
-  const handleSelectDefaultPrompt = useCallback((prompt: DefaultPrompt) => {
-    setLocalContent(prompt.content);
-    onContentChange(prompt.content);
-    setShowDefaultPrompts(false);
-  }, [onContentChange]);
+
 
   // Resize functionality
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -154,16 +147,6 @@ const PromptComposer: React.FC<PromptComposerProps> = ({
         <div className="prompt-composer-controls">
           <button
             type="button"
-            onClick={() => setShowDefaultPrompts(!showDefaultPrompts)}
-            className="composer-button composer-button-secondary"
-            title="Browse Default Prompts"
-          >
-            <svg viewBox="0 0 24 24" className="button-icon">
-              <path d="M9 12H15M9 16H15M17 21H3C2.44772 21 2 20.5523 2 20V4C2 3.44772 2.44772 3 3 3H17C17.5523 3 18 3.44772 18 4V7L22 3V11L18 7V20C18 20.5523 17.5523 21 17 21Z" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
-          <button
-            type="button"
             onClick={() => setShowTemplateManager(!showTemplateManager)}
             className="composer-button composer-button-secondary"
             title="Manage Templates"
@@ -184,13 +167,6 @@ const PromptComposer: React.FC<PromptComposerProps> = ({
           </button>
         </div>
       </div>
-
-      {showDefaultPrompts && (
-        <DefaultPromptsPanel
-          onSelectPrompt={handleSelectDefaultPrompt}
-          onClose={() => setShowDefaultPrompts(false)}
-        />
-      )}
 
       {showTemplateManager && (
         <TemplateManager
